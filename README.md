@@ -20,7 +20,7 @@ A arquitetura proposta para o Sistema de Gerenciamento de Documentos Corporativo
   
 ## 2. Diagrama de Arquitetura  
   
-![architecture](/diagramdesigndoc.png)
+![architecture](digramdesigndoc.png)
   
   
   
