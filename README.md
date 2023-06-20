@@ -1,3 +1,4 @@
+
 # Design Doc: Sistema de Gerenciamento de Documentos Corporativos  
   
 ## 1. Visão Geral  
@@ -126,6 +127,14 @@ Para o gerenciamento e análise de logs, adotamos o uso de AWS CloudWatch, Prome
   
 A combinação dessas ferramentas nos permite monitorar todos os aspectos do aplicativo e da infraestrutura, detectar problemas precocemente e analisar incidentes após o fato.  
   
+  ### Por quê usar Aws Cloudwatch se ja temos grafana e prometheus?
+  1.  **Integração nativa com serviços AWS**: O CloudWatch é um serviço da AWS e, portanto, tem integração nativa com outros serviços da AWS. Ele pode coletar métricas e logs diretamente de serviços como EC2, RDS, DynamoDB, Lambda e muitos outros. Isso pode ser mais fácil e mais eficiente do que configurar o Prometheus para coletar essas métricas.
+    
+2.  **Alarmes**: O CloudWatch permite que você configure alarmes com base em métricas específicas. Por exemplo, você pode configurar um alarme para notificá-lo se a utilização da CPU em uma instância EC2 exceder um certo limite. Embora o Prometheus também possa gerar alertas, o CloudWatch facilita a configuração de notificações por e-mail, SMS ou ações automáticas usando o AWS SNS (Simple Notification Service).
+    
+3.  **Logs**: O CloudWatch também é um serviço de gerenciamento de logs, permitindo que você colete, armazene, acesse e monitore logs de aplicativos e infraestrutura. Embora o Prometheus seja excelente para coletar e analisar métricas, ele não é projetado para lidar com logs.
+    
+4.  **Durabilidade e retenção de dados**: O CloudWatch armazena métricas por 15 meses, permitindo que você realize análises de tendências e compare métricas atuais com históricas. Dependendo de como você configurou o Prometheus, você pode não ter a mesma retenção de dados.
 ## 8. Documentação e Testes  
   
 Utilizaremos o Notion para criar a documentação do projeto. Para os testes automatizados, usamos pytest, integrado ao pipeline Jenkins, além do uso de locust para os testes de carga e mutmut para os testes de mutação que avaliariam não apenas a quantidade de nossos testes mas também a qualidade.  
