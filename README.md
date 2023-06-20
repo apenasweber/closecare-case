@@ -20,7 +20,14 @@ Obs.: pensei na criaçao de um microservice extra para autenticacao e autorizaç
 11. O Jenkins é responsável pela automação do processo de integração contínua e entrega contínua (CI/CD).  
 12. O AWS CloudWatch é utilizado para gerenciar e analisar logs, coletar métricas e definir alarmes.  
 13. O sistema é escalável, modular e resiliente, permitindo adicionar, remover ou atualizar partes do sistema sem afetar o restante do sistema.  
-  
+
+*Considerações de Performance:*
+Quando um usuário possui muitos subordinados, a recuperação de todos os documentos associados a esses subordinados pode se tornar custosa. 
+
+* Paginação: Em vez de retornar todos os documentos de uma vez, você pode retornar uma certa quantidade por vez (por exemplo, 50 ou 100), e permitir que o cliente solicite mais documentos conforme necessário.
+* Caching: Você pode armazenar em cache as listas de employee_ids que cada usuário tem acesso, para evitar ter que calculá-las toda vez que uma requisição for feita. Isso seria especialmente eficaz se as permissões não mudassem com frequência.
+* Indexação: No Document Service, você poderia manter um índice que mapeia employee_ids para document_ids. Isso permitiria que você encontrasse rapidamente todos os documentos associados a um determinado employee_id, sem precisar escanear toda a tabela de documentos.
+
 ## 2. Diagrama de Arquitetura  
   
 ![architecture](digramdesigndoc.png)
@@ -49,15 +56,16 @@ Usando o fargate em conjunto com o AutoScalling AWS poderiamos escalar horizonta
   
 Cada serviço possui uma estrutura de diretórios semelhante a seguinte:  
   
-/service_name
-  ├── /app
-  │   ├── /routes
-  │   ├── /models
-  │   └── /controllers
-  ├── /tests
-  ├── /db
-  ├── main.py
-  └── README.md 
+    /service_name
+      ├── /app
+      │   ├── /routes
+      │   ├── /models
+      │   └── /controllers
+      ├── /tests
+      ├── /db
+      ├── main.py
+      └── README.md
+ 
   
 ### Endpoints  
   
