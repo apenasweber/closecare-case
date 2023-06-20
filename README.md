@@ -49,15 +49,15 @@ Usando o fargate em conjunto com o AutoScalling AWS poderiamos escalar horizonta
   
 Cada serviço possui uma estrutura de diretórios semelhante a seguinte:  
   
-/service_name  
-/app  
-/routes  
-/models  
-/controllers  
-/tests  
-/db  
-main.py  
-README.md  
+/service_name
+  ├── /app
+  │   ├── /routes
+  │   ├── /models
+  │   └── /controllers
+  ├── /tests
+  ├── /db
+  ├── main.py
+  └── README.md 
   
 ### Endpoints  
   
