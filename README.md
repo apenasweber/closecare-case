@@ -4,6 +4,8 @@
 ## 1. Visão Geral  
   
 A arquitetura proposta para o Sistema de Gerenciamento de Documentos Corporativos é baseada em microserviços, implementados em Python usando FastAPI. O sistema é composto por três microserviços principais: Document Service, Employee Service e Permission Service, cada um lidando com um aspecto específico do sistema. Além desses, um serviço BFF (Backend for Frontend) é utilizado para integrar as respostas dos outros microserviços e fornecer uma interface para o frontend, desenvolvido em React. Foquei em utilizar ferramentas opensource.  
+
+Obs.: pensei na criaçao de um microservice extra para autenticacao e autorizaçao mas avaliei alguns pontos e preferi inserir em cada microservice esta função por isolar as aplicações e não depender de outro microservice que pode ter uma maior complexidade e manutenção, além de que, baseado na realidade closecare, alguns microservices precisarão de personalização no gerenciamento de autenticação e autorização com maior ou menor segurança.
   
 1. O usuário interage com a interface do usuário desenvolvida em React (Front-end).  
 2. O BFF Service (FastAPI) recebe as solicitações do usuário e as roteia para os serviços adequados.  
@@ -87,6 +89,18 @@ Este serviço seria responsável por gerenciar todas as permissões do sistema. 
 **Autenticação e Autorização**  
   
 A autenticação e autorização seriam manipuladas usando JSON Web Tokens (JWT). Quando um usuário se autentica com sucesso (talvez por meio de um serviço de autenticação separado ou por um endpoint no Employee Service), ele recebe um token JWT. Este token seria incluído nas requisições subsequentes ao BFF ou aos microserviços. Cada serviço então verificaria a validade do token e usaria as informações nele para determinar quais recursos o usuário tem permissão para acessar.  
+
+3.1 Autenticação inicial:
+-   O usuário insere suas credenciais (geralmente um nome de usuário e senha) através da interface do usuário (UI).
+-   As credenciais do usuário são enviadas para o serviço de autenticação.
+-   O serviço de autenticação valida as credenciais do usuário contra os dados armazenados no banco de dados do Employee Service. Se as credenciais forem válidas, o serviço de autenticação gerará um JWT, que contém uma assinatura digital e os detalhes do usuário.
+-   O JWT é enviado de volta para o usuário e armazenado no cliente (por exemplo, no armazenamento local do navegador).
+
+3.2. Requisições subsequentes:
+-   Para cada solicitação subsequente, o cliente incluirá o JWT no cabeçalho da solicitação.
+-   O serviço BFF ou qualquer um dos microserviços verificará a validade do JWT. Se o token for válido, a solicitação será processada. Caso contrário, a solicitação será rejeitada e o usuário será solicitado a se autenticar novamente.
+
+Este fluxo garante que apenas usuários autenticados possam acessar o sistema e que eles só possam acessar os recursos para os quais têm permissão.
   
 **Comunicação entre Microserviços**  
   
@@ -97,6 +111,18 @@ Também poderíamos considerar o uso de um broker de mensagens (como RabbitMQ ou
 ## 5. Banco de Dados  
   
 Cada serviço tem seu próprio banco de dados PostgreSQL hospedado no Amazon RDS, com exceção do Documente Service que utiliza DynamoDB da AWS. Isto permite que cada serviço seja responsável por sua própria persistência de dados, o que é uma característica importante de uma arquitetura de microserviços.  
+
+5.1 Backup Regular de Dados:
+
+-   Realizamos backups regulares dos dados armazenados em nossos bancos de dados PostgreSQL e DynamoDB. Os backups são criados diariamente e armazenados em um local seguro para garantir que os dados possam ser recuperados no caso de perda de dados ou falha do sistema.
+
+5.2. Recuperação de Desastres:
+
+-   Em caso de falha de sistema, temos uma estratégia de recuperação de desastres em vigor para garantir que nosso sistema possa ser restaurado ao estado operacional o mais rápido possível. Isso pode envolver a restauração dos dados a partir dos backups mais recentes e a verificação da integridade dos dados após a recuperação.
+
+5.3. Redundância de Serviços:
+
+-   Para aumentar a disponibilidade e a resiliência do nosso sistema, implementamos uma arquitetura de microserviços com redundância. Cada serviço é implantado em várias instâncias, e se uma instância falhar, as outras instâncias podem continuar a operar sem interrupção. Além disso, a AWS Fargate, que estamos usando para orquestrar nossos contêineres Docker, suporta a substituição automática de instâncias de serviço que falham, o que aumenta ainda mais a resiliência do nosso sistema.
   
 ## 6. Automação e Monitoramento  
   
